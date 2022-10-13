@@ -1,6 +1,6 @@
 
-#define US_ECHO D3 // attach pin D2 Arduino to pin Echo of HC-SR04
-#define US_TRIGGER D5 //attach pin D3 Arduino to pin Trig of HC-SR04
+#define US_ECHO D3
+#define US_TRIGGER D5
 
 // defines variables
 float duration; // variable for the duration of sound wave travel
@@ -24,5 +24,4 @@ void loop() {
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
-  delay(100);
 }
