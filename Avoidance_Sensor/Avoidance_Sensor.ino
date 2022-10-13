@@ -1,15 +1,18 @@
 #define LED D4 // Use the onboard Uno LED
-#define isObstaclePin D3  // This is our input pin
+#define obstaclePin D3  // This is our input pin
+#define enablePin D2  // This is our input pin
 int isObstacle = HIGH;  // HIGH MEANS NO OBSTACLE
 
 void setup() {
   pinMode(LED, OUTPUT);
-  pinMode(isObstaclePin, INPUT);
+  pinMode(obstaclePin, INPUT);
+  pinMode(enablePin, OUTPUT);
   Serial.begin(9600);  
 }
 
 void loop() {
-  isObstacle = digitalRead(isObstaclePin);
+  digitalWrite(enablePin, HIGH); 
+  isObstacle = digitalRead(obstaclePin);
   if (isObstacle == LOW)
   {
     Serial.println("OBSTACLE!!, OBSTACLE!!");
