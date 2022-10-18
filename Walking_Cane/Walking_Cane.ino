@@ -1,10 +1,11 @@
 // SENSOR PINS
-#define US_ECHO D2
-#define US_TRIGGER D3
+#define US_ECHO D6
+#define US_TRIGGER D7
 #define BUZZER D4
 #define SWITCH D5
 
 #define THRESHOLD 200
+#define DISTANCE_THRESHOLD 10.00
 
 // DEBOUNCING
 volatile byte is_pressed = LOW;
@@ -92,6 +93,9 @@ void loop() {
     Serial.println("No Fire");
     flame_state = LOW;
     break;
+   default:
+    flame_state = LOW;
+    break;
   }
   
   /**
@@ -111,8 +115,9 @@ void loop() {
   Serial.print(distance);
   Serial.println(" cm");
 
-  if(distance < 10.00)
+  if(distance < DISTANCE_THRESHOLD) {
     distance_state == HIGH;
+  }
   else
     distance_state == LOW;
 
