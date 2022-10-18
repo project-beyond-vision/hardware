@@ -104,28 +104,26 @@ void loop() {
    * ULTRASONIC
    * 
    */
-//  digitalWrite(US_TRIGGER, LOW);
-//  delayMicroseconds(2);
-//  digitalWrite(US_TRIGGER, HIGH);
-//  delayMicroseconds(10);
-//  digitalWrite(US_TRIGGER, LOW);
-//  duration = pulseIn(US_ECHO, HIGH); // return time in microseconds
-//  distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (to and fro)
-//  // Displays the distance on the Serial Monitor
-//  Serial.print("Distance: ");
-//  Serial.print(distance);
-//  Serial.println(" cm");
-//
-//  if(distance < DISTANCE_EDGE_THRESHOLD) {
-//    distance_state = LOW;
-//  }
-//  else if(distance < DISTANCE_THRESHOLD)
-//    distance_state = HIGH;
-//  else
-//    distance_state = LOW;
-//    
+  digitalWrite(US_TRIGGER, LOW);
+  delayMicroseconds(2);
+  digitalWrite(US_TRIGGER, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(US_TRIGGER, LOW);
+  duration = pulseIn(US_ECHO, HIGH); // return time in microseconds
+  distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (to and fro)
+  // Displays the distance on the Serial Monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
 
-distance_state = LOW;
+  if(distance < DISTANCE_EDGE_THRESHOLD) {
+    distance_state = LOW;
+  }
+  else if(distance < DISTANCE_THRESHOLD)
+    distance_state = HIGH;
+  else
+    distance_state = LOW;
+ 
 
   // PLAY BUZZER
   if(panic_state == HIGH || flame_state == HIGH || distance_state == HIGH) {
