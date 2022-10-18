@@ -5,7 +5,7 @@
 #define SWITCH D5
 
 #define THRESHOLD 200
-#define DISTANCE_THRESHOLD 10.00
+#define DISTANCE_THRESHOLD 20.00
 
 // DEBOUNCING
 volatile byte is_pressed = LOW;
@@ -116,10 +116,10 @@ void loop() {
   Serial.println(" cm");
 
   if(distance < DISTANCE_THRESHOLD) {
-    distance_state == HIGH;
+    distance_state = HIGH;
   }
   else
-    distance_state == LOW;
+    distance_state = LOW;
 
   // PLAY BUZZER
   if(panic_state == HIGH || flame_state == HIGH || distance_state == HIGH)
