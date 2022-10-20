@@ -19,10 +19,11 @@
 #include "config.h"
 #define MPU6500_ADDR 0x68
 
+
 EspMQTTClient client(
   ssid,
   wifiPassword,
-  "192.168.0.190",  // MQTT Broker server ip
+  "192.168.63.234",  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
   "TestClient",     // Client name that uniquely identify your device
@@ -159,24 +160,26 @@ void setup() {
 }
 
 void loop() {
+  client.loop();
   xyzFloat gValue = myMPU6500.getGValues();
   xyzFloat gyr = myMPU6500.getGyrValues();
   String payload = "{";
-  payload.concat("'x':");
+  payload.concat("\"x\":");
   payload.concat(gValue.x);
-  payload.concat(",'y': ");
+  payload.concat(",\"y\": ");
   payload.concat(gValue.y);
-  payload.concat(",'z': ");
+  payload.concat(",\"z\": ");
   payload.concat(gValue.z);
-  payload.concat(",'rx': ");
+  payload.concat(",\"rx\": ");
 
   payload.concat(gyr.x);
-  payload.concat(",'ry': ");
+  payload.concat(",\"ry\": ");
   payload.concat(gyr.y);
-  payload.concat(",'rz': ");
+  payload.concat(",\"rz\": ");
   payload.concat(gyr.z);
   payload.concat("}");
   Serial.print(payload);
+//  client.publish("group_05/imu/data", "hello");
   client.publish("group_05/imu/data", payload);
 
   delay(50);

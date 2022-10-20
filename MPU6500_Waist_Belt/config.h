@@ -1,2 +1,2 @@
-const char* ssid = "ssid";
-const char* wifiPassword = "password";
+const char* ssid = "Wamika";
+const char* wifiPassword = "mdsy4149";
