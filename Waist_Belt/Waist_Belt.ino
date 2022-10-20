@@ -1,5 +1,7 @@
 #include "Wire.h"
-#include "I2C.h"
+#include "i2c.h"
+
+//#include <i2c_MPU9250.h>
 
 #define MPU9250_IMU_ADDRESS 0x68
 #define MPU9250_MAG_ADDRESS 0x0C
