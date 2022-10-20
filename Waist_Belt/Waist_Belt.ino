@@ -16,7 +16,7 @@
 #define ACC_FULL_SCALE_8G  0x10
 #define ACC_FULL_SCALE_16G 0x18
 
-#define INTERVAL_MS_PRINT 1000
+#define INTERVAL_MS_PRINT 50
 
 #define G 9.80665
 
