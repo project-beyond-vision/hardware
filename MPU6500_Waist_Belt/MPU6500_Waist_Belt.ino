@@ -14,8 +14,20 @@
 ***************************************************************************/
 
 #include <MPU6500_WE.h>
+#include <EspMQTTClient.h>
 #include <Wire.h>
+#include "config.h"
 #define MPU6500_ADDR 0x68
+
+EspMQTTClient client(
+  ssid,
+  wifiPassword,
+  "192.168.0.190",  // MQTT Broker server ip
+  "MQTTUsername",   // Can be omitted if not needed
+  "MQTTPassword",   // Can be omitted if not needed
+  "TestClient",     // Client name that uniquely identify your device
+  1883              // The MQTT port, default to 1883. this line can be omitted
+);
 
 /* There are several ways to create your MPU6500 object:
  * MPU6500_WE myMPU6500 = MPU6500_WE()              -> uses Wire / I2C Address = 0x68
@@ -149,19 +161,32 @@ void setup() {
 void loop() {
   xyzFloat gValue = myMPU6500.getGValues();
   xyzFloat gyr = myMPU6500.getGyrValues();
+  String payload = "{";
+  payload.concat("'x':");
+  payload.concat(gValue.x);
+  payload.concat(",'y': ");
+  payload.concat(gValue.y);
+  payload.concat(",'z': ");
+  payload.concat(gValue.z);
+  payload.concat(",'rx': ");
 
-  Serial.print(gValue.x);
-  Serial.print(", ");
-  Serial.print(gValue.y);
-  Serial.print(", ");
-  Serial.print(gValue.z);
-  Serial.print(", ");
-
-  Serial.print(gyr.x);
-  Serial.print(", ");
-  Serial.print(gyr.y);
-  Serial.print(", ");
-  Serial.println(gyr.z);
+  payload.concat(gyr.x);
+  payload.concat(",'ry': ");
+  payload.concat(gyr.y);
+  payload.concat(",'rz': ");
+  payload.concat(gyr.z);
+  payload.concat("}");
+  Serial.print(payload);
+  client.publish("group_05/imu/data", payload);
 
   delay(50);
+}
+
+// necessary method for mqtt
+void onConnectionEstablished()
+{
+  // Subscribe to "mytopic/test" and display received message to Serial
+  client.subscribe("group_05/panic", [](const String & payload) {
+    Serial.println(payload);
+  });
 }
