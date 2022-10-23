@@ -23,12 +23,14 @@
 EspMQTTClient client(
   ssid,
   wifiPassword,
-  "192.168.63.234",  // MQTT Broker server ip
+  mqttBrokerIp,  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
   "TestClient",     // Client name that uniquely identify your device
   1883              // The MQTT port, default to 1883. this line can be omitted
 );
+
+unsigned long timer;
 
 /* There are several ways to create your MPU6500 object:
  * MPU6500_WE myMPU6500 = MPU6500_WE()              -> uses Wire / I2C Address = 0x68
@@ -41,6 +43,7 @@ MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR);
 
 void setup() {
   Serial.begin(115200);
+  timer = millis();
   Wire.begin();
   if(!myMPU6500.init()){
     Serial.println("MPU6500 does not respond");
@@ -161,28 +164,29 @@ void setup() {
 
 void loop() {
   client.loop();
-  xyzFloat gValue = myMPU6500.getGValues();
-  xyzFloat gyr = myMPU6500.getGyrValues();
-  String payload = "{";
-  payload.concat("\"x\":");
-  payload.concat(gValue.x);
-  payload.concat(",\"y\": ");
-  payload.concat(gValue.y);
-  payload.concat(",\"z\": ");
-  payload.concat(gValue.z);
-  payload.concat(",\"rx\": ");
+  if (millis() - timer > 50) {
+    timer = millis();
+    xyzFloat gValue = myMPU6500.getGValues();
+    xyzFloat gyr = myMPU6500.getGyrValues();
+    String payload = "{";
+    payload.concat("\"x\":");
+    payload.concat(gValue.x);
+    payload.concat(",\"y\": ");
+    payload.concat(gValue.y);
+    payload.concat(",\"z\": ");
+    payload.concat(gValue.z);
+    payload.concat(",\"rx\": ");
 
-  payload.concat(gyr.x);
-  payload.concat(",\"ry\": ");
-  payload.concat(gyr.y);
-  payload.concat(",\"rz\": ");
-  payload.concat(gyr.z);
-  payload.concat("}");
-  Serial.print(payload);
-//  client.publish("group_05/imu/data", "hello");
-  client.publish("group_05/imu/data", payload);
-
-  delay(50);
+    payload.concat(gyr.x);
+    payload.concat(",\"ry\": ");
+    payload.concat(gyr.y);
+    payload.concat(",\"rz\": ");
+    payload.concat(gyr.z);
+    payload.concat("}");
+    Serial.print(payload);
+  //  client.publish("group_05/imu/data", "hello");
+    client.publish("group_05/imu/data", payload);
+  }
 }
 
 // necessary method for mqtt
