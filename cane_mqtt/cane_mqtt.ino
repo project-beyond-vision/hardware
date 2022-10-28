@@ -7,10 +7,12 @@
 #define US_TRIGGER D7
 #define BUZZER D4
 #define SWITCH D5
+#define SWITCH2 D8
 
 #define THRESHOLD 200
 #define DISTANCE_THRESHOLD 20.00
 #define DISTANCE_EDGE_THRESHOLD 1.00
+#define PANIC_THRESHOLD 5000 // 5 seconds
 
 EspMQTTClient client(
   ssid,
@@ -18,7 +20,7 @@ EspMQTTClient client(
   mqttBrokerIp,  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
-  "TestClient",     // Client name that uniquely identify your device
+  "cane",     // Client name that uniquely identify your device
   1883              // The MQTT port, default to 1883. this line can be omitted
 );
 
@@ -29,6 +31,8 @@ byte sound_state = LOW;
 unsigned short cnt = 0;
 unsigned long last_sound_time = 0;
 unsigned long last_pressed_time = 0;
+unsigned long time_since_panic = 0;
+unsigned long time_since_fire = 0;
 
 // flame sensor connected to analog pins
 // lowest and highest flame sensor readings:
@@ -64,9 +68,10 @@ void setup() {
   pinMode(BUZZER, OUTPUT);
   digitalWrite(BUZZER, LOW);
   pinMode(SWITCH, INPUT_PULLUP);
+  pinMode(SWITCH2, INPUT_PULLUP);
   attachInterrupt(
   digitalPinToInterrupt(SWITCH), toggle, RISING);
-  Serial.begin(19200);
+  Serial.begin(115200);
 }
 
 void loop() {
@@ -86,12 +91,21 @@ void loop() {
   
   if (button_state) {
     panic_state = HIGH;
+    if (millis() - time_since_panic > PANIC_THRESHOLD) {
+      time_since_panic = millis();
+    }
     Serial.println("Toggle On");
   } else {
+    // TODO: change this part to change panic_state to LOW only if DEASSERT button is pressed
     panic_state = LOW;
     Serial.println("Toggle Off");
   }
 
+
+  if (panic_state == HIGH && millis() - time_since_panic > PANIC_THRESHOLD) {
+     sendMqttMessage("group_05/panic","PANIC BUTTON PRESSED!");
+     panic_state = LOW; // deassert panic state after 5 seconds and sending mqtt message
+  }
   /**
    * 
    * FLAME SENSOR
@@ -109,6 +123,11 @@ void loop() {
     Serial.println("** Close Fire **");
     // play immediate danger sound
     // SEND MESSAGE TO CLOSE CONTACT WITH GPS INFO + FIRE
+    // send 1 message and block sending new messages until PANIC_THRESHOLD seconds pass
+    if (millis() - time_since_fire > PANIC_THRESHOLD) {
+      time_since_fire = millis();
+      sendMqttMessage("group_05/flame", "FIRE DETECTED NEAR USER!");
+    }
     flame_state = HIGH;
     break;
   case 1:    // A fire between 1-3 feet away.
@@ -175,6 +194,7 @@ void playBuzzer() {
     cnt = 0;
 }
 
-void sendMqttMessage() {
-  client.publish("group_05/imu/threshold", "fall triggered");
+void sendMqttMessage(String topic, String message) {
+  // client.publish("group_05/imu/threshold", "fall triggered");
+  client.publish(topic, message);
 }
