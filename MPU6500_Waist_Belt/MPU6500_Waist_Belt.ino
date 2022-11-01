@@ -182,6 +182,10 @@ void loop() {
     payload.concat(gyr.y);
     payload.concat(",\"rz\": ");
     payload.concat(gyr.z);
+//    payload.concat(",\"id\": ");
+//    payload.concat(id);
+//    payload.concat(",\"chat_id\": ");
+//    payload.concat("\"" + teleChatId + "\"");
     payload.concat("}");
     Serial.print(payload);
   //  client.publish("group_05/imu/data", "hello");
@@ -192,6 +196,7 @@ void loop() {
 // necessary method for mqtt
 void onConnectionEstablished()
 {
+  Serial.print("connection established");
   // Subscribe to "mytopic/test" and display received message to Serial
   client.subscribe("group_05/panic", [](const String & payload) {
     Serial.println(payload);

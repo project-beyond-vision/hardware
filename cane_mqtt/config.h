@@ -1,5 +1,6 @@
 const char* ssid = "Wamika";
 const char* wifiPassword = "mdsy4149";
-const char* mqttBrokerIp = "";
-String id = "1";
-String type = "stick";
+const char* mqttBrokerIp = "192.168.216.234";
+String id = "1"; // identifier for a set of devices
+String type = "cane";
+String teleChatId = "766789823";

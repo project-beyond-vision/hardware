@@ -1,13 +1,12 @@
 #include <EspMQTTClient.h>
 #include "config.h"
-#define MPU6500_ADDR 0x68
 
 // SENSOR PINS
-#define US_ECHO D6
-#define US_TRIGGER D7
+#define US_ECHO D7
+#define US_TRIGGER D6
 #define BUZZER D4
-#define SWITCH D5
-#define SWITCH2 D8
+#define SWITCH D3
+#define SWITCH2 D5
 
 #define THRESHOLD 200
 #define DISTANCE_THRESHOLD 20.00
@@ -18,7 +17,7 @@ EspMQTTClient client(
   ssid,
   wifiPassword,
   mqttBrokerIp,  // MQTT Broker server ip
-  "MQTTUsername",   // Can be omitted if not needed
+  "Cane",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
   "cane",     // Client name that uniquely identify your device
   1883              // The MQTT port, default to 1883. this line can be omitted
@@ -52,6 +51,10 @@ IRAM_ATTR void toggle() {
   is_pressed = HIGH;
 }
 
+IRAM_ATTR void deass() {
+  is_pressed = LOW;
+}
+
 // necessary method for mqtt
 void onConnectionEstablished()
 {
@@ -69,8 +72,8 @@ void setup() {
   digitalWrite(BUZZER, LOW);
   pinMode(SWITCH, INPUT_PULLUP);
   pinMode(SWITCH2, INPUT_PULLUP);
-  attachInterrupt(
-  digitalPinToInterrupt(SWITCH), toggle, RISING);
+  attachInterrupt(digitalPinToInterrupt(SWITCH), toggle, RISING);
+  attachInterrupt(digitalPinToInterrupt(SWITCH2), deass, RISING);
   Serial.begin(115200);
 }
 
@@ -82,7 +85,6 @@ void loop() {
    * 
    */
   if(is_pressed == HIGH) {
-    is_pressed = LOW;
     if(millis() - last_pressed_time > THRESHOLD) {
       button_state = !button_state;
       last_pressed_time = millis();
@@ -91,7 +93,7 @@ void loop() {
   
   if (button_state) {
     panic_state = HIGH;
-    if (millis() - time_since_panic > PANIC_THRESHOLD) {
+    if (millis() - time_since_panic > PANIC_THRESHOLD + 1000) {
       time_since_panic = millis();
     }
     Serial.println("Toggle On");
@@ -104,6 +106,7 @@ void loop() {
 
   if (panic_state == HIGH && millis() - time_since_panic > PANIC_THRESHOLD) {
      sendMqttMessage("group_05/panic","PANIC BUTTON PRESSED!");
+     is_pressed = LOW;
      panic_state = LOW; // deassert panic state after 5 seconds and sending mqtt message
   }
   /**
