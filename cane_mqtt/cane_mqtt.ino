@@ -83,29 +83,21 @@ void loop() {
    * 
    * PANIC BUTTON
    * 
-   */
-  if(is_pressed == HIGH) {
-    if(millis() - last_pressed_time > THRESHOLD) {
-      button_state = !button_state;
-      last_pressed_time = millis();
-    }
-  }
-  
-  if (button_state) {
+   */  
+  if (is_pressed == HIGH) {
     panic_state = HIGH;
     if (millis() - time_since_panic > PANIC_THRESHOLD + 1000) {
       time_since_panic = millis();
     }
-    Serial.println("Toggle On");
+    Serial.println("Panic On");
   } else {
-    // TODO: change this part to change panic_state to LOW only if DEASSERT button is pressed
     panic_state = LOW;
-    Serial.println("Toggle Off");
+    Serial.println("Panic Off");
   }
 
 
   if (panic_state == HIGH && millis() - time_since_panic > PANIC_THRESHOLD) {
-     sendMqttMessage("group_05/panic","PANIC BUTTON PRESSED!");
+     sendMqttMessage("group_05/panic", "{\"id\": "+ id + "}");
      is_pressed = LOW;
      panic_state = LOW; // deassert panic state after 5 seconds and sending mqtt message
   }
@@ -129,7 +121,7 @@ void loop() {
     // send 1 message and block sending new messages until PANIC_THRESHOLD seconds pass
     if (millis() - time_since_fire > PANIC_THRESHOLD) {
       time_since_fire = millis();
-      sendMqttMessage("group_05/flame", "FIRE DETECTED NEAR USER!");
+      sendMqttMessage("group_05/flame", "{\"id\": "+ id + "}");
     }
     flame_state = HIGH;
     break;

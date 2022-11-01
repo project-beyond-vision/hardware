@@ -1,6 +1,6 @@
-const char* ssid = "Wamika";
-const char* wifiPassword = "mdsy4149";
-const char* mqttBrokerIp = "192.168.216.234";
+const char* ssid = "Zeon_iPhone";
+const char* wifiPassword = "1689358000";
+const char* mqttBrokerIp = "172.20.10.4";
 String id = "1"; // identifier for a set of devices
 String type = "cane";
 String teleChatId = "766789823";

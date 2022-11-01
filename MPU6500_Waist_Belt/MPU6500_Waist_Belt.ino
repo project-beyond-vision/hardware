@@ -24,7 +24,7 @@ EspMQTTClient client(
   ssid,
   wifiPassword,
   mqttBrokerIp,  // MQTT Broker server ip
-  "MQTTUsername",   // Can be omitted if not needed
+  "Waist",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
   "TestClient",     // Client name that uniquely identify your device
   1883              // The MQTT port, default to 1883. this line can be omitted
@@ -182,10 +182,10 @@ void loop() {
     payload.concat(gyr.y);
     payload.concat(",\"rz\": ");
     payload.concat(gyr.z);
-//    payload.concat(",\"id\": ");
-//    payload.concat(id);
-//    payload.concat(",\"chat_id\": ");
-//    payload.concat("\"" + teleChatId + "\"");
+    payload.concat(",\"id\": ");
+    payload.concat(id);
+    payload.concat(",\"chat_id\": ");
+    payload.concat("\"" + teleChatId + "\"");
     payload.concat("}");
     Serial.print(payload);
   //  client.publish("group_05/imu/data", "hello");
