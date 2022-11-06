@@ -13,6 +13,10 @@
 #define DISTANCE_EDGE_THRESHOLD 1.00
 #define PANIC_THRESHOLD 5000 // 5 seconds
 
+#define BUZZER_US 50
+#define BUZZER_PANIC 25
+#define BUZZER_FLAME 200
+
 EspMQTTClient client(
   ssid,
   wifiPassword,
@@ -165,18 +169,21 @@ void loop() {
  
 
   // PLAY BUZZER
-  if(panic_state == HIGH || flame_state == HIGH || distance_state == HIGH) {
-    playBuzzer();
+  if(panic_state == HIGH) {
+    playBuzzer(BUZZER_PANIC);
     Serial.println(panic_state);
+  } else if (flame_state == HIGH) {
+    playBuzzer(BUZZER_FLAME);
     Serial.println(flame_state);
+  } else if (distance_state == HIGH) {
+    playBuzzer(BUZZER_US);
     Serial.println(distance_state);
-  }
-  else
+  } else
     digitalWrite(BUZZER, LOW);
 }
 
-void playBuzzer() {
-  if (millis() - last_sound_time > 50) {
+void playBuzzer(unsigned long n) {
+  if (millis() - last_sound_time > n) {
     cnt++;
     last_sound_time = millis();
   }
